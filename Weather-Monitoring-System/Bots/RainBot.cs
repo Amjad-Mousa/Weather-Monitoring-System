@@ -15,9 +15,13 @@ namespace Weather_Monitoring_System.Bots
 
         public void Activate(WeatherData data)
         {
-            if (data.Humidity > _humidityThreshold)
+            if (data.Humidity >= _humidityThreshold)
             {
                 Console.WriteLine(_message);
+            }
+            else
+            {
+                Console.WriteLine($"No rain expected. Humidity ({data.Humidity}%) is below the threshold ({_humidityThreshold}%).");
             }
         }
     }

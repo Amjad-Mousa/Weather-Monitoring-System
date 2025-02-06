@@ -18,5 +18,11 @@ namespace Weather_Monitoring_System.Entities
             Temperature = temperature;
             Humidity = humidity;
         }
+        public WeatherData()
+        {
+            Location = null;
+            Temperature = 0;
+            Humidity = 0;
+        }
     }
 }

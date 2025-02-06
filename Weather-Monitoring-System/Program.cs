@@ -1,122 +1,124 @@
 ﻿using System;
-using Weather_Monitoring_System.Entities;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 using Weather_Monitoring_System.Bots;
+using Weather_Monitoring_System.Entities;
 
-namespace Weather_Monitoring_System
+class Program
 {
-    class Program
+    static void Main()
     {
-        static void Main(string[] args)
+        Console.Write("Enter path to configuration JSON file: ");
+        string configPath = Console.ReadLine();
+
+        if (!File.Exists(configPath))
         {
-            Console.WriteLine("Weather Monitoring System");
+            Console.WriteLine("Configuration file not found.");
+            return;
+        }
+
+        string configJson = File.ReadAllText(configPath);
+        var configData = JsonConvert.DeserializeObject<Dictionary<string, BotConfig>>(configJson);
+        var bots = new List<IBot>();
+
+        Console.WriteLine("Configuration file loaded successfully.");
+
+        foreach (var botConfig in configData)
+        {
+            string botName = botConfig.Key;
+            bool isEnabled = botConfig.Value.Enabled;
+            string status = isEnabled ? "Enabled" : "Disabled";
+            Console.WriteLine($"{botName} Status: {status}");
+
+            if (isEnabled)
+            {
+                if (botName == "RainBot")
+                    bots.Add(new RainBot(botConfig.Value.HumidityThreshold, botConfig.Value.Message));
+                else if (botName == "SunBot")
+                    bots.Add(new SunBot(botConfig.Value.TemperatureThreshold, botConfig.Value.Message));
+                else if (botName == "SnowBot")
+                    bots.Add(new SnowBot(botConfig.Value.TemperatureThreshold, botConfig.Value.Message));
+            }
+        }
+
+        WeatherData weatherData = null;
+
+        while (true)
+        {
+            Console.WriteLine("\nSelect an option:");
             Console.WriteLine("1. Load weather data from JSON");
             Console.WriteLine("2. Load weather data from XML");
             Console.WriteLine("3. Show bot status");
             Console.WriteLine("4. Exit");
             Console.Write("Choose an option: ");
+            string choice = Console.ReadLine();
 
-            var option = Console.ReadLine();
-
-            WeatherData weatherData = null;
-            BotConfigContainer botConfigContainer = null;
-
-            switch (option)
+            switch (choice)
             {
                 case "1":
-                    Console.Write("Enter path to configuration JSON file: ");
-                    string jsonConfigFilePath = Console.ReadLine();
-                    try
-                    {
-                        botConfigContainer = JsonWeatherDataParser.ReadBotConfigFromFile(jsonConfigFilePath);
-                        Console.Write("Enter path to JSON weather data file: ");
-                        string jsonFilePath = Console.ReadLine();
-                        weatherData = JsonWeatherDataParser.ReadWeatherDataFromFile(jsonFilePath);
-                        Console.WriteLine("Weather data loaded from JSON successfully.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    weatherData = LoadWeatherDataFromJson();
                     break;
-
                 case "2":
-                    Console.Write("Enter path to configuration JSON file: ");
-                    string xmlConfigFilePath = Console.ReadLine();
-                    try
-                    {
-                        botConfigContainer = JsonWeatherDataParser.ReadBotConfigFromFile(xmlConfigFilePath);
-                        Console.Write("Enter path to XML weather data file: ");
-                        string xmlFilePath = Console.ReadLine();
-                        weatherData = XmlWeatherDataParser.ReadFromFile(xmlFilePath);
-                        Console.WriteLine("Weather data loaded from XML successfully.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    weatherData = LoadWeatherDataFromXml();
                     break;
-
                 case "3":
-                    if (weatherData == null || botConfigContainer == null)
+                    if (weatherData == null)
                     {
-                        Console.WriteLine("Please load weather data first.");
+                        Console.WriteLine("No weather data loaded yet.");
                     }
                     else
                     {
-                        Console.WriteLine("Bot Status:");
-
-                        if (botConfigContainer.RainBot != null && botConfigContainer.RainBot.Enabled)
+                        Console.WriteLine("\nBot Status:");
+                        foreach (var bot in bots)
                         {
-                            Console.WriteLine("RainBot is enabled.");
-                            Console.WriteLine($"Humidity threshold: {botConfigContainer.RainBot.HumidityThreshold}");
-                            Console.WriteLine($"Message: {botConfigContainer.RainBot.Message}");
-                            Console.WriteLine($"Current Weather: {weatherData.Location}, Temperature: {weatherData.Temperature}, Humidity: {weatherData.Humidity}");
-
-                            if (weatherData.Humidity > botConfigContainer.RainBot.HumidityThreshold)
-                            {
-                                var rainBot = new RainBot(botConfigContainer.RainBot.HumidityThreshold, botConfigContainer.RainBot.Message);
-                                rainBot.Activate(weatherData);
-                            }
-                        }
-
-                        if (botConfigContainer.SunBot != null && botConfigContainer.SunBot.Enabled)
-                        {
-                            Console.WriteLine("SunBot is enabled.");
-                            Console.WriteLine($"Temperature threshold: {botConfigContainer.SunBot.TemperatureThreshold}");
-                            Console.WriteLine($"Message: {botConfigContainer.SunBot.Message}");
-
-                            if (weatherData.Temperature > botConfigContainer.SunBot.TemperatureThreshold)
-                            {
-                                var sunBot = new SunBot(botConfigContainer.SunBot.TemperatureThreshold, botConfigContainer.SunBot.Message);
-                                sunBot.Activate(weatherData);
-                            }
-                        }
-
-                        if (botConfigContainer.SnowBot != null && botConfigContainer.SnowBot.Enabled)
-                        {
-                            Console.WriteLine("SnowBot is enabled.");
-                            Console.WriteLine($"Temperature threshold: {botConfigContainer.SnowBot.TemperatureThreshold}");
-                            Console.WriteLine($"Message: {botConfigContainer.SnowBot.Message}");
-
-                            if (weatherData.Temperature < botConfigContainer.SnowBot.TemperatureThreshold)
-                            {
-                                var snowBot = new SnowBot(botConfigContainer.SnowBot.TemperatureThreshold, botConfigContainer.SnowBot.Message);
-                                snowBot.Activate(weatherData);
-                            }
+                            Console.WriteLine($"Activating {bot.GetType().Name}...");
+                            bot.Activate(weatherData);
                         }
                     }
                     break;
-
                 case "4":
                     Console.WriteLine("Exiting...");
                     return;
-
                 default:
-                    Console.WriteLine("Invalid option. Please try again.");
+                    Console.WriteLine("Invalid choice. Please try again.");
                     break;
             }
-
-            Main(args);
         }
+    }
+
+    static WeatherData LoadWeatherDataFromJson()
+    {
+        Console.Write("Enter path to JSON weather data file: ");
+        string filePath = Console.ReadLine();
+
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine("Weather data file not found.");
+            return null;
+        }
+
+        string json = File.ReadAllText(filePath);
+        var weatherData = JsonConvert.DeserializeObject<WeatherData>(json);
+        Console.WriteLine("Weather data loaded from JSON successfully.");
+        return weatherData;
+    }
+
+    static WeatherData LoadWeatherDataFromXml()
+    {
+        Console.Write("Enter path to XML weather data file: ");
+        string filePath = Console.ReadLine();
+
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine("Weather data file not found.");
+            return null;
+        }
+
+        System.Xml.Serialization.XmlSerializer serializer = new(typeof(WeatherData));
+        using FileStream stream = new(filePath, FileMode.Open);
+        var weatherData = (WeatherData)serializer.Deserialize(stream);
+        Console.WriteLine("Weather data loaded from XML successfully.");
+        return weatherData;
     }
 }
