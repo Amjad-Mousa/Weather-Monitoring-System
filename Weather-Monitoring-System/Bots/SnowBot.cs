@@ -15,9 +15,13 @@ namespace Weather_Monitoring_System.Bots
 
         public void Activate(WeatherData data)
         {
-            if (data.Temperature < _temperatureThreshold)
+            if (data.Temperature <= _temperatureThreshold)
             {
                 Console.WriteLine(_message);
+            }
+            else
+            {
+                Console.WriteLine($"No snow expected. Temperature ({data.Temperature}°C) is above the threshold ({_temperatureThreshold}°C).");
             }
         }
     }

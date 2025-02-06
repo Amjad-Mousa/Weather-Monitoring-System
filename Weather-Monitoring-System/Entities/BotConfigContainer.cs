@@ -8,8 +8,8 @@ namespace Weather_Monitoring_System.Entities
 {
     public class BotConfigContainer
     {
-        public BotConfig RainBot { get; set; }
-        public BotConfig SunBot { get; set; }
-        public BotConfig SnowBot { get; set; }
+        public BotConfig? RainBot { get; set; }
+        public BotConfig? SunBot { get; set; }
+        public BotConfig? SnowBot { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <WeatherData>
-	<Location>Nablus</Location>
-	<Temperature>32.5</Temperature>
-	<Humidity>75.0</Humidity>
+	<Location>Jerusalem</Location>
+	<Temperature>54</Temperature>
+	<Humidity>50</Humidity>
 </WeatherData>
 
