@@ -1,0 +1,22 @@
+﻿namespace Weather_Monitoring_System.Bots
+{
+    public class SnowBot : IBot
+    {
+        private double _temperatureThreshold;
+        private string _message;
+
+        public SnowBot(double temperatureThreshold, string message)
+        {
+            _temperatureThreshold = temperatureThreshold;
+            _message = message;
+        }
+
+        public void Activate(WeatherData data)
+        {
+            if (data.Temperature < _temperatureThreshold)
+            {
+                Console.WriteLine(_message);
+            }
+        }
+    }
+}
