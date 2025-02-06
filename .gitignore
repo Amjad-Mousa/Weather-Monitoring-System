@@ -1,0 +1,215 @@
+# Compiled source code
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.out
+*.a
+*.lib
+
+# Bytecode files
+*.pyc
+*.pyo
+*.class
+*.jar
+*.war
+*.ear
+__pycache__/
+*.swp  # Vim swap files
+
+# Logs and temporary files
+*.log
+*.tmp
+*~
+*.bak
+*.swp
+*.lock
+*.dump
+*.gz
+*.tar.gz
+*.zip
+*.rar
+*.7z
+*.dmg
+*.iso
+*.img
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE specific files
+.idea/
+.vscode/
+*.suo
+*.user
+*.sln
+*.csproj
+*.xproj
+*.yproj
+*.ts
+*.bak
+*.swp
+*.sdf
+*.opensdf
+*.cache
+*.local
+*.settings
+*.metadata
+*.recommenders
+*.iml
+*.ipr
+*.iws
+*.bowerrc
+.npmrc
+.tern-port
+
+# Configuration files
+.env
+config.ini
+config.json
+*.ini
+*.cfg
+*.conf
+
+# Sensitive information - NEVER commit these!
+*.key
+*.pem
+*.pfx
+*.p12
+*.p8
+id_rsa
+id_dsa
+*.enc
+*.secret
+*.token
+
+# Large files (media, archives, etc.) - consider using Git LFS
+*.psd
+*.ai
+*.svg
+*.pdf
+*.zip
+*.rar
+*.7z
+*.gz
+*.tar.gz
+*.iso
+*.dmg
+*.mp3
+*.mp4
+*.mov
+*.avi
+*.jpg
+*.jpeg
+*.png
+*.gif
+
+# Node.js specific
+node_modules/
+package-lock.json
+npm-debug.log
+
+# Python specific
+*.egg
+*.egg-info
+dist/
+build/
+*.whl
+.mypy_cache/
+__pycache__/
+.pytest_cache/
+
+# Ruby specific
+.bundle
+vendor/bundle
+
+# Java specific
+*.class
+*.jar
+*.war
+*.ear
+target/
+bin/
+
+# Go specific
+bin/
+pkg/
+vendor/
+
+# C# specific
+*.csproj.user
+*.sln.user
+*.suo
+*.userprefs
+*.cache
+obj/
+bin/
+
+# Android specific
+.gradle/
+build/
+captures/
+*.apk
+*.ap_
+*.aab
+
+# iOS specific
+*.xcuserdata
+*.xccheckout
+*.xcodeproj/xcuserdata/
+
+# Docker specific
+.dockerignore
+
+# Kubernetes specific
+.kube/
+
+# Terraform specific
+.terraform*
+*.tfstate
+*.tfvars
+
+# Serverless framework specific
+.serverless/
+
+# Cloud specific
+.aws/
+.gcp/
+.azure/
+
+# Other
+.history
+.ropeproject
+*.orig
+*.rej
+*.swo
+*.swn
+*.un~
+*.patch
+*.diff
+*.orig.bak
+*.rej.bak
+*.swp.bak
+*.tmp.bak
+*.lock.bak
+*.dump.bak
+*.gz.bak
+*.tar.gz.bak
+*.zip.bak
+*.rar.bak
+*.7z.bak
+*.dmg.bak
+*.iso.bak
+*.img.bak
+*.mp3.bak
+*.mp4.bak
+*.mov.bak
+*.avi.bak
+*.jpg.bak
+*.jpeg.bak
+*.png.bak
+*.gif.bak
