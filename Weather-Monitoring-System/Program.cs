@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
@@ -22,16 +22,25 @@ class Program
         var configData = JsonConvert.DeserializeObject<Dictionary<string, BotConfig>>(configJson);
         var bots = new List<IBot>();
 
-        if (configData.ContainsKey("RainBot") && configData["RainBot"].Enabled)
-            bots.Add(new RainBot(configData["RainBot"].HumidityThreshold, configData["RainBot"].Message));
-
-        if (configData.ContainsKey("SunBot") && configData["SunBot"].Enabled)
-            bots.Add(new SunBot(configData["SunBot"].TemperatureThreshold, configData["SunBot"].Message));
-
-        if (configData.ContainsKey("SnowBot") && configData["SnowBot"].Enabled)
-            bots.Add(new SnowBot(configData["SnowBot"].TemperatureThreshold, configData["SnowBot"].Message));
-
         Console.WriteLine("Configuration file loaded successfully.");
+
+        foreach (var botConfig in configData)
+        {
+            string botName = botConfig.Key;
+            bool isEnabled = botConfig.Value.Enabled;
+            string status = isEnabled ? "Enabled" : "Disabled";
+            Console.WriteLine($"{botName} Status: {status}");
+
+            if (isEnabled)
+            {
+                if (botName == "RainBot")
+                    bots.Add(new RainBot(botConfig.Value.HumidityThreshold, botConfig.Value.Message));
+                else if (botName == "SunBot")
+                    bots.Add(new SunBot(botConfig.Value.TemperatureThreshold, botConfig.Value.Message));
+                else if (botName == "SnowBot")
+                    bots.Add(new SnowBot(botConfig.Value.TemperatureThreshold, botConfig.Value.Message));
+            }
+        }
 
         WeatherData weatherData = null;
 
@@ -63,6 +72,7 @@ class Program
                         Console.WriteLine("\nBot Status:");
                         foreach (var bot in bots)
                         {
+                            Console.WriteLine($"Activating {bot.GetType().Name}...");
                             bot.Activate(weatherData);
                         }
                     }
