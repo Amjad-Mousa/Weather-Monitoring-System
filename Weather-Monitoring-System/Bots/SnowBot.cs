@@ -1,4 +1,6 @@
-﻿namespace Weather_Monitoring_System.Bots
+﻿using Weather_Monitoring_System.Entities;
+
+namespace Weather_Monitoring_System.Bots
 {
     public class SnowBot : IBot
     {

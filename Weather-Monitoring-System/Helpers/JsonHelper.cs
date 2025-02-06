@@ -1,59 +1,81 @@
-﻿namespace Weather_Monitoring_System
+﻿using Weather_Monitoring_System.Entities;
+
+namespace Weather_Monitoring_System
 {
     public class JsonWeatherDataParser
     {
-        public static WeatherData Parse(string json)
+        public static WeatherData ParseWeatherData(string json)
+        {
+            ValidateJson(json);
+            var data = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
+
+            var location = data?.Location?.ToString();
+            var temperature = data?.Temperature;
+            var humidity = data?.Humidity;
+
+            ValidateWeatherData(location, temperature, humidity);
+
+            return new WeatherData(location, (double)temperature, (double)humidity);
+        }
+
+        public static BotConfigContainer ParseBotConfig(string json)
+        {
+            ValidateJson(json);
+            var config = Newtonsoft.Json.JsonConvert.DeserializeObject<BotConfigContainer>(json);
+
+            return config;
+        }
+
+        public static WeatherData ReadWeatherDataFromFile(string filePath)
+        {
+            if (!System.IO.File.Exists(filePath))
+            {
+                throw new FileNotFoundException("Weather data file not found", filePath);
+            }
+
+            string json = System.IO.File.ReadAllText(filePath);
+            return ParseWeatherData(json);
+        }
+
+        public static BotConfigContainer ReadBotConfigFromFile(string configFilePath)
+        {
+            if (!System.IO.File.Exists(configFilePath))
+            {
+                throw new FileNotFoundException("Configuration file not found", configFilePath);
+            }
+
+            string configJson = System.IO.File.ReadAllText(configFilePath);
+            return ParseBotConfig(configJson);
+        }
+
+        private static void ValidateJson(string json)
         {
             if (string.IsNullOrEmpty(json))
             {
                 throw new ArgumentException("JSON string cannot be null or empty");
             }
-
-            try
-            {
-                var data = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
-                var location = data?.Location?.ToString();
-                if (string.IsNullOrEmpty(location))
-                {
-                    throw new ArgumentException("JSON string must contain a valid Location element");
-                }
-
-                var temperature = data?.Temperature;
-                if (temperature == null)
-                {
-                    throw new ArgumentException("JSON string must contain a valid Temperature element");
-                }
-
-                var humidity = data?.Humidity;
-                if (humidity == null)
-                {
-                    throw new ArgumentException("JSON string must contain a valid Humidity element");
-                }
-
-                return new WeatherData(location, (double)temperature, (double)humidity);
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException("Failed to parse JSON data", ex);
-            }
         }
 
-        public static WeatherData ReadFromFile(string filePath)
+        private static void ValidateWeatherData(string location, object temperature, object humidity)
         {
-            try
+            if (string.IsNullOrEmpty(location))
             {
-                if (!System.IO.File.Exists(filePath))
-                {
-                    throw new FileNotFoundException("File not found", filePath);
-                }
-
-                string json = System.IO.File.ReadAllText(filePath);
-                return JsonWeatherDataParser.Parse(json);
+                throw new ArgumentException("JSON string must contain a valid Location element");
             }
-            catch (Exception ex)
+
+            if (temperature == null)
             {
-                throw new ArgumentException("Failed to read or parse the file", ex);
+                throw new ArgumentException("JSON string must contain a valid Temperature element");
+            }
+
+            if (humidity == null)
+            {
+                throw new ArgumentException("JSON string must contain a valid Humidity element");
             }
         }
     }
+
+ 
+
+
 }

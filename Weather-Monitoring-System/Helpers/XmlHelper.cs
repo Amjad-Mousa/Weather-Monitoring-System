@@ -1,4 +1,6 @@
-﻿namespace Weather_Monitoring_System
+﻿using Weather_Monitoring_System.Entities;
+
+namespace Weather_Monitoring_System
 {
     public class XmlWeatherDataParser
     {
