@@ -42,6 +42,7 @@ ehthumbs.db
 Desktop.ini
 
 # IDE specific files
+.vs/
 .idea/
 .vscode/
 *.suo
